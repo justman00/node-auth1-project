@@ -1,4 +1,4 @@
-const { User } = require("../users/users-model");
+const User = require("../users/users-model");
 const bcrypt = require("bcryptjs");
 /*
   If the user does not have a session saved in the server
@@ -25,7 +25,7 @@ function checkUsernameFree() {
   return async (req, res, next) => {
     try {
       const { username } = req.body;
-      const user = await User.find({ username }).exec();
+      const user = await User.findBy({ username });
       if (user) {
         return res.status(422).json({ message: "Username taken." });
       }
@@ -43,7 +43,7 @@ function checkUsernameExists() {
   return async (req, res, next) => {
     try {
       const { username, password } = req.body;
-      const user = await User.find({ username }).exec();
+      const user = await User.findBy({ username });
       const passwordValid = await bcrypt.compare(password, user.password);
 
       if (!user || !passwordValid) {

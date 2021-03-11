@@ -14,8 +14,12 @@ const mongoose = require("mongoose");
 console.log(process.env.MONGO_DB_USERNAME, process.env.MONGO_DB_PASSWORD);
 
 mongoose.connect(
-  `mongodb+srv://${process.env.MONGO_DB_USERNAME}:${process.env.MONGO_DB_PASSWORD}@stepit-cluster.v8xqd.mongodb.net/Auth?retryWrites=true&w=majority`
+  `mongodb+srv://${process.env.MONGO_DB_USERNAME}:${process.env.MONGO_DB_PASSWORD}@stepit-cluster.v8xqd.mongodb.net/Auth?retryWrites=true&w=majority`,
+  { useNewUrlParser: true, useUnifiedTopology: true }
 );
+
+const db = mongoose.connection;
+db.on("error", console.error.bind(console, "MongoDB connection error:"));
 
 /**
   Do what needs to be done to support sessions with the `express-session` package!
