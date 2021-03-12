@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.get("/api/users", restricted(), async (req, res, next) => {
   try {
-    res.json(await User.find());
+    res.json(await User.getUsers());
   } catch (err) {
     next(err);
   }

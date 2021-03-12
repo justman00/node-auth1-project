@@ -37,7 +37,7 @@ router.post(
   "/api/auth/register",
   checkUsernameFree(),
   checkPasswordLength(),
-  async (res, req, next) => {
+  async (req, res, next) => {
     try {
       const { username, password } = req.body;
       const newUser = await User.add({
@@ -72,9 +72,8 @@ router.post(
   checkUsernameExists(),
   async (req, res, next) => {
     try {
-      req.session.user = user;
       res.json({
-        message: `Welcome ${user.username}`,
+        message: `Welcome ${req.session.user.username}`,
       });
     } catch (err) {
       next(err);

@@ -7,6 +7,7 @@ const bcrypt = require("bcryptjs");
 function restricted() {
   return async (req, res, next) => {
     try {
+      console.log(req.session, req.session.user);
       if (!req.session && !req.session.user) {
         return res.status(401).json({ message: "You shall not pass!" });
       }
@@ -26,8 +27,11 @@ function checkUsernameFree() {
     try {
       const { username } = req.body;
       const user = await User.findBy({ username });
+      console.log("user", user);
       if (user) {
         return res.status(422).json({ message: "Username taken." });
+      } else {
+        next();
       }
     } catch (err) {
       next(err);
@@ -48,6 +52,9 @@ function checkUsernameExists() {
 
       if (!user || !passwordValid) {
         return res.status(401).json({ message: "Invalid credentials." });
+      } else {
+        req.session.user = user;
+        next();
       }
     } catch (err) {
       next(err);
@@ -67,6 +74,8 @@ function checkPasswordLength() {
         return res
           .status(422)
           .json({ message: "Password must be longer than 3 chars" });
+      } else {
+        next();
       }
     } catch (err) {
       next(err);

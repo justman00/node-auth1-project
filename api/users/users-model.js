@@ -25,7 +25,7 @@ function find() {
   resolves to an ARRAY with all users that match the filter condition
  */
 function findBy(filter) {
-  return User.find({ filter }).exec();
+  return User.findOne(filter).exec();
 }
 
 /**
@@ -41,6 +41,8 @@ function findById(user_id) {
 function add(user) {
   return new User(user).save();
 }
-
+function getUsers() {
+  return User.find().select("-password").exec();
+}
 // Don't forget to add these to the `exports` object so they can be required in other modules
-module.exports = { find, findBy, findById, add };
+module.exports = { find, findBy, findById, add, getUsers };
