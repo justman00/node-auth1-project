@@ -1,6 +1,25 @@
+require("dotenv").config();
+
 const express = require("express");
 const helmet = require("helmet");
 const cors = require("cors");
+
+const server = express();
+const usersRouter = require("./users/users-router");
+const authRouter = require("./auth/auth-router");
+
+const session = require("express-session");
+
+const mongoose = require("mongoose");
+console.log(process.env.MONGO_DB_USERNAME, process.env.MONGO_DB_PASSWORD);
+
+mongoose.connect(
+  `mongodb+srv://${process.env.MONGO_DB_USERNAME}:${process.env.MONGO_DB_PASSWORD}@stepit-cluster.v8xqd.mongodb.net/Auth?retryWrites=true&w=majority`,
+  { useNewUrlParser: true, useUnifiedTopology: true }
+);
+
+const db = mongoose.connection;
+db.on("error", console.error.bind(console, "MongoDB connection error:"));
 
 /**
   Do what needs to be done to support sessions with the `express-session` package!
@@ -15,17 +34,27 @@ const cors = require("cors");
   or you can use a session store like `connect-session-knex`.
  */
 
-const server = express();
-
 server.use(helmet());
 server.use(express.json());
 server.use(cors());
+
+server.use(
+  session({
+    resave: false,
+    saveUninitialized: false,
+    secret: "My safe secret",
+  })
+);
+
+server.use(usersRouter);
+server.use(authRouter);
 
 server.get("/", (req, res) => {
   res.json({ api: "up" });
 });
 
-server.use((err, req, res, next) => { // eslint-disable-line
+server.use((err, req, res, next) => {
+  // eslint-disable-line
   res.status(500).json({
     message: err.message,
     stack: err.stack,
